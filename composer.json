@@ -1,0 +1,26 @@
+{
+    "name": "elmijo/php-html-dom",
+    "description": "Esta Es una Herramienta que permite convertir y manipular una cadena de texto con formato html en un objeto php.",
+    "type": "library",
+    "version": "1.0.0",
+    "require": {
+        "php": ">=5.4.0",
+        "symfony/symfony": "^3.0"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jerry Anselmi",
+            "email": "jerry.anselmi@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "BuilderBox\\Component\\":""
+        }
+    },
+    "require-dev": {
+        "satooshi/php-coveralls": "dev-master"
+    },
+    "minimum-stability": "stable"
+}
