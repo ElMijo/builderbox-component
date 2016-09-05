@@ -71,8 +71,7 @@ class Command extends SymfonyCommand implements ContainerAwareInterface
      */
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
-        $this->manager = $this->getContainer()->get('doctrine.orm.entity_manager');
-        $this->helper = $this->getHelper('question');
+        // $this->manager = $this->getContainer()->get('doctrine.orm.entity_manager');
         $this->style = new SymfonyStyle($input, $output);
         return $this;
     }
