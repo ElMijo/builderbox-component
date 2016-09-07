@@ -1,5 +1,5 @@
 <?php
-use BuilderBox\Component\Console\Command\Command;
+use BuilderBox\Component\Console\Command\BuilderBoxAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Application;
@@ -9,25 +9,26 @@ class CommandTest extends \PHPUnit_Framework_TestCase
 {
     protected static $fixturesPath;
 
+    protected static $application;
+
     public static function setUpBeforeClass()
     {
-        self::$fixturesPath = __DIR__.'/../Fixtures/';
-        require_once self::$fixturesPath.'/TestCommand.php';
-        require_once self::$fixturesPath.'/TestCommandMessage.php';
+        static::$fixturesPath = __DIR__.'/../Fixtures/';
+        require_once static::$fixturesPath.'/TestCommand.php';
+        require_once static::$fixturesPath.'/TestCommandMessage.php';
+        require_once static::$fixturesPath.'/TestCommandTable.php';
+        require_once static::$fixturesPath.'/TestCommandProgress.php';
+        require_once static::$fixturesPath.'/TestCommandRequiredServices.php';
+        require_once(__DIR__ . "/../../../../../../app/AppKernel.php");
+        $kernel = new \AppKernel("test", true);
+        $kernel->boot();
+        static::$application = new \Symfony\Bundle\FrameworkBundle\Console\Application($kernel);
     }
 
     public function testConstructor()
     {
-        $command = new Command('namespace:name');
+        $command = new \TestCommand('namespace:name');
         $this->assertEquals('namespace:name', $command->getName());
-    }
-
-    /**
-     * @expectedException        \LogicException
-     */
-    public function testCommandEmptyName()
-    {
-        new Command();
     }
 
     public function testSetApplication()
@@ -42,23 +43,41 @@ class CommandTest extends \PHPUnit_Framework_TestCase
     {
         $files = $this->outputFilesProvider();
         $command = new \TestCommandMessage();
-        // $command->setApplication(new Application());
         $tester = new CommandTester($command);
         $tester->execute(array(), array('interactive' => false, 'decorated' => false));
         $this->assertStringEqualsFile($files[0], $tester->getDisplay(true));
-        // print_r($tester->getDisplay(true));
+    }
+
+    public function testStyleTable()
+    {
+        $files = $this->outputFilesProvider();
+        $command = new \TestCommandTable();
+        $tester = new CommandTester($command);
+        $tester->execute(array(), array('interactive' => false, 'decorated' => false));
+        $this->assertStringEqualsFile($files[1], $tester->getDisplay(true));
+    }
+
+    public function testStyleProgress()
+    {
+        $files = $this->outputFilesProvider();
+        $command = new \TestCommandProgress();
+        $tester = new CommandTester($command);
+        $tester->execute(array(), array('interactive' => false, 'decorated' => false));
+        $this->assertStringEqualsFile($files[2], $tester->getDisplay(true));
+    }
+
+    public function testRequiredServices()
+    {
+        $files = $this->outputFilesProvider();
+        $command = new \TestCommandRequiredServices();
+        $command->setApplication(static::$application);
+        $tester = new CommandTester($command);
+        $tester->execute(array(), array('interactive' => false, 'decorated' => false));
+        $this->assertStringEqualsFile($files[3], $tester->getDisplay(true));
     }
 
     public function outputFilesProvider()
     {
-        return glob(sprintf("%s/%s", self::$fixturesPath, '/Style/output/output_*.txt'));
+        return glob(sprintf("%s/%s", static::$fixturesPath, '/Style/output/output_*.txt'));
     }
-
-    // public function testOutputs($inputCommandFilepath, $outputFilepath)
-    // {
-    //     $code = require $inputCommandFilepath;
-    //     $this->command->setCode($code);
-    //     $this->tester->execute(array(), array('interactive' => false, 'decorated' => false));
-    //     $this->assertStringEqualsFile($outputFilepath, $this->tester->getDisplay(true));
-    // }
 }

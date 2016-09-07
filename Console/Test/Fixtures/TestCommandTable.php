@@ -3,7 +3,7 @@ use BuilderBox\Component\Console\Command\BuilderBoxAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class TestCommand extends BuilderBoxAwareCommand
+class TestCommandTable extends BuilderBoxAwareCommand
 {
     protected function configure()
     {
@@ -17,8 +17,12 @@ class TestCommand extends BuilderBoxAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $output->writeln('execute called');
+        $this
+            ->table(['header 1', 'header 2'], [['row 1.1', 'row 1.2'], ['row 2.1', 'row 2.2']])
+            ->table([], [['row 1.1', 'row 1.2'], ['row 2.1', 'row 2.2']])
+            ->table(['header 1', 'header 2'], [])
+        ;
     }
-    
+
     protected function getRequiredServices() {}
 }

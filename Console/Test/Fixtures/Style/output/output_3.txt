@@ -1,0 +1,3 @@
+Doctrine\ORM\EntityManager
+Symfony\Component\Translation\IdentityTranslator
+Symfony\Bundle\FrameworkBundle\Routing\Router

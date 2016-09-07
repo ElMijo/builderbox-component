@@ -12,8 +12,47 @@ Section
  Texto 1
  Texto 2
 
- // comment simple
+ // comment simple                                                                                                      
 
- // comment 1
- //
- // comment 2
+ // comment 1                                                                                                           
+ //                                                                                                                     
+ // comment 2                                                                                                           
+
+ [OK] success simple                                                                                                    
+
+ [OK] success 1                                                                                                         
+                                                                                                                        
+      success 2                                                                                                         
+
+ [ERROR] error simple                                                                                                   
+
+ [ERROR] error 1                                                                                                        
+                                                                                                                        
+         error 2                                                                                                        
+
+ [WARNING] warning simple                                                                                               
+
+ [WARNING] warning 1                                                                                                    
+                                                                                                                        
+           warning 2                                                                                                    
+
+ [INFO] info simple                                                                                                     
+
+ [INFO] info 1                                                                                                          
+                                                                                                                        
+        info 2                                                                                                          
+
+ ! [NOTE] note simple                                                                                                   
+
+ ! [NOTE] note 1                                                                                                        
+ !                                                                                                                      
+ !        note 2                                                                                                        
+
+ ! [CAUTION] caution simple                                                                                             
+
+ ! [CAUTION] caution 1                                                                                                  
+ !                                                                                                                      
+ !           caution 2                                                                                                  
+
+ [BLOCK] Block                                                                                                          
+

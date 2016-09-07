@@ -4,6 +4,7 @@ namespace BuilderBox\Component\Console\Command;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -13,7 +14,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  * Base class for BuilderBox Command
  * @author Jerry Anselmi <jerry.anselmi@gmail.com>
  */
-class Command extends SymfonyCommand implements ContainerAwareInterface
+abstract class BuilderBoxAwareCommand extends ContainerAwareCommand
 {
     /**
      * @var \Symfony\Component\DependencyInjection\ContainerInterface|null
@@ -26,53 +27,25 @@ class Command extends SymfonyCommand implements ContainerAwareInterface
     protected $style;
 
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * It allows for an associative array with the services that you want
+     * to instantiate the beginning of the command.
+     * @return array|null associative array with the services that you want to instantiate Ej: ["manager" => "doctrine.orm.entity_manager"]
      */
-    protected $manager;
-
-    /**
-     * @var \Symfony\Component\Console\Helper\QuestionHelper
-     */
-    protected $helper;
-
-    public function __construct($name = null)
-    {
-        parent::__construct($name);
-    }
-
-    /**
-     * @return ContainerInterface
-     *
-     * @throws \Symfony\Component\Console\Exception\LogicException
-     */
-    protected function getContainer()
-    {
-        if (null === $this->container) {
-            $application = $this->getApplication();
-            if (null === $application) {
-                throw new LogicException('The container cannot be retrieved as the application instance is not yet set.');
-            }
-            $this->container = $application->getKernel()->getContainer();
-        }
-
-        return $this->container;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setContainer(ContainerInterface $container = null)
-    {
-        $this->container = $container;
-    }
+    abstract protected function getRequiredServices();
 
     /**
      * {@inheritdoc}
      */
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
-        // $this->manager = $this->getContainer()->get('doctrine.orm.entity_manager');
         $this->style = new SymfonyStyle($input, $output);
+
+        try {
+            $container = $this->getContainer();
+            foreach($this->getRequiredServices() as $key => $value) {
+                $this->{$key} = $container->get($value);
+            }
+        } catch (\Exception $e) {}
         return $this;
     }
 
@@ -80,7 +53,7 @@ class Command extends SymfonyCommand implements ContainerAwareInterface
      * @see \Symfony\Component\Console\Style\StyleInterface::title()
      * @return self
      */
-    protected function title($text)
+    final protected function title($text)
     {
         $this->style->title($text);
         return $this;
@@ -90,7 +63,7 @@ class Command extends SymfonyCommand implements ContainerAwareInterface
      * @see \Symfony\Component\Console\Style\StyleInterface::section()
      * @return self
      */
-    protected function section($message)
+    final protected function section($message)
     {
         $this->style->section($message);
         return $this;
@@ -100,7 +73,7 @@ class Command extends SymfonyCommand implements ContainerAwareInterface
      * @see \Symfony\Component\Console\Style\StyleInterface::listing()
      * @return self
      */
-    protected function listing(array $elements)
+    final protected function listing(array $elements)
     {
         $this->style->listing($elements);
         return $this;
@@ -110,7 +83,7 @@ class Command extends SymfonyCommand implements ContainerAwareInterface
      * @see \Symfony\Component\Console\Style\StyleInterface::text()
      * @return self
      */
-    protected function text($message)
+    final protected function text($message)
     {
         $this->multiline($message, 'text');
         return $this;
@@ -120,7 +93,7 @@ class Command extends SymfonyCommand implements ContainerAwareInterface
      * @see \Symfony\Component\Console\Style\SymfonyStyle::comment()
      * @return self
      */
-    protected function comment($message)
+    final protected function comment($message)
     {
         $this->multiline($message, 'comment');
         return $this;
@@ -130,7 +103,7 @@ class Command extends SymfonyCommand implements ContainerAwareInterface
      * @see \Symfony\Component\Console\Style\StyleInterface::success()
      * @return self
      */
-    protected function success($message)
+    final protected function success($message)
     {
         $this->multiline($message, 'success');
         return $this;
@@ -140,7 +113,7 @@ class Command extends SymfonyCommand implements ContainerAwareInterface
      * @see \Symfony\Component\Console\Style\StyleInterface::error()
      * @return self
      */
-    protected function error($message)
+    final protected function error($message)
     {
         $this->multiline($message, 'error');
         return $this;
@@ -150,7 +123,7 @@ class Command extends SymfonyCommand implements ContainerAwareInterface
      * @see \Symfony\Component\Console\Style\StyleInterface::warning()
      * @return self
      */
-    protected function warning($message)
+    final protected function warning($message)
     {
         $this->block(
             $message,
@@ -171,7 +144,7 @@ class Command extends SymfonyCommand implements ContainerAwareInterface
      * @param string|array $message
      * @return self
      */
-    protected function info($message)
+    final protected function info($message)
     {
         $this->block(
             $message,
@@ -190,7 +163,7 @@ class Command extends SymfonyCommand implements ContainerAwareInterface
      * @see \Symfony\Component\Console\Style\StyleInterface::note()
      * @return self
      */
-    protected function note($message)
+    final protected function note($message)
     {
         $this->multiline($message, 'note');
         return $this;
@@ -200,7 +173,7 @@ class Command extends SymfonyCommand implements ContainerAwareInterface
      * @see \Symfony\Component\Console\Style\StyleInterface::caution()
      * @return self
      */
-    protected function caution($message)
+    final protected function caution($message)
     {
         $this->multiline($message, 'caution');
         return $this;
@@ -210,7 +183,7 @@ class Command extends SymfonyCommand implements ContainerAwareInterface
      * @see \Symfony\Component\Console\Style\StyleInterface::table()
      * @return self
      */
-    protected function table(array $headers, array $rows)
+    final protected function table(array $headers, array $rows)
     {
         $this->style->table($headers, $rows);
         return $this;
@@ -220,7 +193,7 @@ class Command extends SymfonyCommand implements ContainerAwareInterface
      * @see \Symfony\Component\Console\Style\StyleInterface::progressStart()
      * @return self
      */
-    protected function progressStart($max = 0)
+    final protected function progressStart($max = 0)
     {
         $this->style->progressStart($max);
         return $this;
@@ -230,7 +203,7 @@ class Command extends SymfonyCommand implements ContainerAwareInterface
      * @see \Symfony\Component\Console\Style\StyleInterface::progressAdvance()
      * @return self
      */
-    protected function progressAdvance($step = 1)
+    final protected function progressAdvance($step = 1)
     {
         $this->style->progressAdvance($step);
         return $this;
@@ -240,7 +213,7 @@ class Command extends SymfonyCommand implements ContainerAwareInterface
      * @see \Symfony\Component\Console\Style\StyleInterface::progressFinish()
      * @return self
      */
-    protected function progressFinish()
+    final protected function progressFinish()
     {
         $this->style->progressFinish();
         return $this;
@@ -250,7 +223,7 @@ class Command extends SymfonyCommand implements ContainerAwareInterface
      * @see \Symfony\Component\Console\Style\StyleInterface::newLine()
      * @return self
      */
-    protected function newLine($count = 1)
+    final protected function newLine($count = 1)
     {
         $this->style->newLine($count);
         return $this;
@@ -260,7 +233,7 @@ class Command extends SymfonyCommand implements ContainerAwareInterface
      * @see \Symfony\Component\Console\Style\SymfonyStyle::block()
      * @return self
      */
-    protected function block($message, $type = null, $style = null, $prefix = ' ', $padding = false)
+    final protected function block($message, $type = null, $style = null, $prefix = ' ', $padding = false)
     {
         if (in_array(gettype($message), ['string', 'array'])) {
             $this->style->block($message, $type, $style, $prefix, $padding);
@@ -272,7 +245,7 @@ class Command extends SymfonyCommand implements ContainerAwareInterface
      * @see \Symfony\Component\Console\Style\StyleInterface::ask()
      * @return string
      */
-    public function ask($question, $default = null, $validator = null)
+    final protected function ask($question, $default = null, $validator = null)
     {
         return $this->style->ask($question, $default, $validator);
     }
@@ -281,7 +254,7 @@ class Command extends SymfonyCommand implements ContainerAwareInterface
      * @see \Symfony\Component\Console\Style\StyleInterface::askHidden()
      * @return string
      */
-    public function askHidden($question, $validator = null)
+    final protected function askHidden($question, $validator = null)
     {
         return $this->style->askHidden($question, $validator);
     }
@@ -290,7 +263,7 @@ class Command extends SymfonyCommand implements ContainerAwareInterface
      * @see \Symfony\Component\Console\Style\StyleInterface::choice()
      * @return string
      */
-    public function choice($question, array $choices, $default = null)
+    final protected function choice($question, array $choices, $default = null)
     {
         return $this->style->choice($question, $choices, $default);
     }
@@ -299,7 +272,7 @@ class Command extends SymfonyCommand implements ContainerAwareInterface
      * @see \Symfony\Component\Console\Style\StyleInterface::confirm()
      * @return boolean
      */
-    public function confirm($question, $default = true)
+    final protected function confirm($question, $default = true)
     {
         return $this->style->confirm($question, $default);
     }
