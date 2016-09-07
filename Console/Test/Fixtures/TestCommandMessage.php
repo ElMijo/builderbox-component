@@ -17,6 +17,9 @@ class TestCommandMessage extends BuilderBoxAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $ref = new \ReflectionProperty(get_class($this->style), 'lineLength');
+        $ref->setAccessible(true);
+        $ref->setValue($this->style, 120);
         $this
             ->title('Title')
             ->section('Section')
