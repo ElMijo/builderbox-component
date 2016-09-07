@@ -9,6 +9,9 @@ php:
   - nightly
 env:
   - SYMFONY_VERSION=^3.0
+cache:
+  directories:
+    - $HOME/.composer/cache/files
 before_script:
   - composer self-update
   - composer require symfony/symfony:${SYMFONY_VERSION}
