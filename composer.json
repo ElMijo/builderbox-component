@@ -5,8 +5,7 @@
     "version": "1.0.0",
     "require": {
         "php": ">=5.5.9",
-        "symfony/symfony": "^3.0",
-        "symfony/monolog-bundle": "^2.8"
+        "symfony/symfony": "^3.0"
     },
     "license": "MIT",
     "authors": [
@@ -21,7 +20,10 @@
         }
     },
     "require-dev": {
-        "satooshi/php-coveralls": "*"
+        "satooshi/php-coveralls": "*",
+        "symfony/swiftmailer-bundle": "^2.3",
+        "symfony/monolog-bundle": "^2.8",
+        "doctrine/doctrine-bundle": "^1.6"
     },
     "minimum-stability": "stable"
 }
