@@ -14,8 +14,9 @@
         </testsuite>
     </testsuites>
     <filter>
-        <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix="Test.php">Console/</directory>
+        <whitelist>
+            <directory suffix=".php">Console/Command</directory>
+            <directory suffix=".php">Console/Exception</directory>
         </whitelist>
     </filter>
     <logging>

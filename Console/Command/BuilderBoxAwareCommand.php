@@ -1,7 +1,6 @@
 <?php
 namespace BuilderBox\Component\Console\Command;
 
-use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -25,6 +24,16 @@ abstract class BuilderBoxAwareCommand extends ContainerAwareCommand
      * @var \Symfony\Component\Console\Style\SymfonyStyle|null
      */
     protected $style;
+    
+    /**
+     * @var \Symfony\Component\Console\Input\InputInterface
+     */
+    protected $input;
+    
+    /**
+     * @var Symfony\Component\Console\Output\OutputInterface
+     */
+    protected $output;
 
     /**
      * It allows for an associative array with the services that you want
@@ -38,6 +47,8 @@ abstract class BuilderBoxAwareCommand extends ContainerAwareCommand
      */
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
+        $this->input = $input;
+        $this->output = $output;
         $this->style = new SymfonyStyle($input, $output);
 
         try {
@@ -46,6 +57,7 @@ abstract class BuilderBoxAwareCommand extends ContainerAwareCommand
                 $this->{$key} = $container->get($value);
             }
         } catch (\Exception $e) {}
+            
         return $this;
     }
 
