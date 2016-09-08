@@ -5,7 +5,8 @@
     "version": "1.0.0",
     "require": {
         "php": ">=5.5.9",
-        "symfony/symfony": "^3.0"
+        "symfony/symfony": "^3.0",
+        "symfony/monolog-bundle": "^2.8"
     },
     "license": "MIT",
     "authors": [
