@@ -23,7 +23,8 @@
         "satooshi/php-coveralls": "*",
         "symfony/swiftmailer-bundle": "^2.3",
         "symfony/monolog-bundle": "^2.8",
-        "doctrine/doctrine-bundle": "^1.6"
+        "doctrine/doctrine-bundle": "^1.6",
+        "sensio/framework-extra-bundle": "^3.0.2"
     },
     "minimum-stability": "stable"
 }
