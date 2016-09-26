@@ -35,6 +35,19 @@ class CommandStyle
         return sprintf("fg=%s;bg=%s", $fontColor, $backgroundColor);
     }
 
+    public static function styleText($text, $fontColor = "default", $backgroundColor = "default")
+    {
+
+        return sprintf(
+            "<%s>%s</>",
+            static::styleBlock(
+                $fontColor,
+                $backgroundColor
+            ),
+            $text
+        );
+    }
+
     private static function validateColor($color)
     {
         return in_array(

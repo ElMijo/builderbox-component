@@ -18,18 +18,18 @@ abstract class BuilderBoxAwareCommand extends ContainerAwareCommand
     /**
      * @var \Symfony\Component\DependencyInjection\ContainerInterface|null
      */
-    private $container;
+    protected $container;
 
     /**
      * @var \Symfony\Component\Console\Style\SymfonyStyle|null
      */
     protected $style;
-    
+
     /**
      * @var \Symfony\Component\Console\Input\InputInterface
      */
     protected $input;
-    
+
     /**
      * @var Symfony\Component\Console\Output\OutputInterface
      */
@@ -52,12 +52,12 @@ abstract class BuilderBoxAwareCommand extends ContainerAwareCommand
         $this->style = new SymfonyStyle($input, $output);
 
         try {
-            $container = $this->getContainer();
+            $this->container = $this->getContainer();
             foreach($this->getRequiredServices() as $key => $value) {
-                $this->{$key} = $container->get($value);
+                $this->{$key} = $this->container->get($value);
             }
         } catch (\Exception $e) {}
-            
+
         return $this;
     }
 
@@ -91,13 +91,37 @@ abstract class BuilderBoxAwareCommand extends ContainerAwareCommand
         return $this;
     }
 
+    final protected function textInfo($message)
+    {
+        $this->multilineText($message, CommandStyle::COLOR_BLUE);
+        return $this;
+    }
+
+    final protected function textWarning($message)
+    {
+        $this->multilineText($message, CommandStyle::COLOR_YELLOW);
+        return $this;
+    }
+
+    final protected function textSuccess($message)
+    {
+        $this->multilineText($message, CommandStyle::COLOR_GREEN);
+        return $this;
+    }
+
+    final protected function textError($message)
+    {
+        $this->multilineText($message, CommandStyle::COLOR_RED);
+        return $this;
+    }
+
     /**
      * @see \Symfony\Component\Console\Style\StyleInterface::text()
      * @return self
      */
     final protected function text($message)
     {
-        $this->multiline($message, 'text');
+        $this->multilineBlock($message, 'text');
         return $this;
     }
 
@@ -107,7 +131,7 @@ abstract class BuilderBoxAwareCommand extends ContainerAwareCommand
      */
     final protected function comment($message)
     {
-        $this->multiline($message, 'comment');
+        $this->multilineBlock($message, 'comment');
         return $this;
     }
 
@@ -117,7 +141,7 @@ abstract class BuilderBoxAwareCommand extends ContainerAwareCommand
      */
     final protected function success($message)
     {
-        $this->multiline($message, 'success');
+        $this->multilineBlock($message, 'success');
         return $this;
     }
 
@@ -127,7 +151,7 @@ abstract class BuilderBoxAwareCommand extends ContainerAwareCommand
      */
     final protected function error($message)
     {
-        $this->multiline($message, 'error');
+        $this->multilineBlock($message, 'error');
         return $this;
     }
 
@@ -177,7 +201,7 @@ abstract class BuilderBoxAwareCommand extends ContainerAwareCommand
      */
     final protected function note($message)
     {
-        $this->multiline($message, 'note');
+        $this->multilineBlock($message, 'note');
         return $this;
     }
 
@@ -187,7 +211,7 @@ abstract class BuilderBoxAwareCommand extends ContainerAwareCommand
      */
     final protected function caution($message)
     {
-        $this->multiline($message, 'caution');
+        $this->multilineBlock($message, 'caution');
         return $this;
     }
 
@@ -296,10 +320,32 @@ abstract class BuilderBoxAwareCommand extends ContainerAwareCommand
      * @param  string|array $message
      * @param  string $method
      */
-    private function multiline($message, $method)
+    private function multilineBlock($message, $method)
     {
         if (in_array(gettype($message), ['string', 'array'])) {
             $this->style->{$method}($message);
+        }
+    }
+
+    private function multilineText($message, $fontColor = "default", $backgroundColor = "default")
+    {
+        if (is_array($message)) {
+            foreach ($message as $key => $value) {
+                $message[$key] = CommandStyle::styleText(
+                    $message,
+                    $fontColor,
+                    $backgroundColor
+                );
+            }
+        } elseif(is_string($message)) {
+            $message = CommandStyle::styleText(
+                $message,
+                $fontColor,
+                $backgroundColor
+            );
+        }
+        if (in_array(gettype($message), ['string', 'array'])) {
+            $this->output->writeln($message);
         }
     }
 }
